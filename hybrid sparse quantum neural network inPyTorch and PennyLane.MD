@@ -177,10 +177,10 @@ This script upgrades the earlier toy examples into a **fully-variational quantum
 ## 1 Data pipeline and preprocessing
 
 ### Loading and filtering  
-* The Iris data set contains 150 samples of three species with four features each; the script keeps only Setosa (0) and Versicolor (1) to make it a binary task citeturn0search3.  
+* The Iris data set contains 150 samples of three species with four features each; the script keeps only Setosa (0) and Versicolor (1) to make it a binary task.  
 
 ### Standardisation  
-* `StandardScaler` rescales each feature to zero mean and unit variance so that the encoded rotation angles span a balanced range on the Bloch sphere, which stabilises optimisation citeturn0search7.
+* `StandardScaler` rescales each feature to zero mean and unit variance so that the encoded rotation angles span a balanced range on the Bloch sphere, which stabilises optimisation.
 
 ---
 
@@ -188,12 +188,12 @@ This script upgrades the earlier toy examples into a **fully-variational quantum
 
 | Component | Purpose |
 |-----------|---------|
-| **`default.qubit` device** | CPU-based state-vector simulator that supports backprop-style gradients, ideal for quick prototyping citeturn0search9. |
-| **`AngleEmbedding`** | Loads the 4-dimensional (already standardised) feature vector as rotation angles on four qubits, preserving feature locality citeturn0search0. |
-| **`BasicEntanglerLayers`** | Applies a layer of CNOT-mediated entanglement with trainable single-qubit rotations; one weight tensor of shape (1, 4) means *one* variational layer citeturn0search1. |
+| **`default.qubit` device** | CPU-based state-vector simulator that supports backprop-style gradients, ideal for quick prototyping. |
+| **`AngleEmbedding`** | Loads the 4-dimensional (already standardised) feature vector as rotation angles on four qubits, preserving feature locality. |
+| **`BasicEntanglerLayers`** | Applies a layer of CNOT-mediated entanglement with trainable single-qubit rotations; one weight tensor of shape (1, 4) means *one* variational layer. |
 | **Measurement** | Returns 〈Z〉 expectation of qubit 0; this scalar acts as a learned quantum feature. |
 
-The variational block follows the canonical three-step recipe—state preparation, model ansatz, measurement—used in quantum classifiers citeturn0search6.
+The variational block follows the canonical three-step recipe—state preparation, model ansatz, measurement—used in quantum classifiers.
 
 ---
 
@@ -204,14 +204,14 @@ The variational block follows the canonical three-step recipe—state preparatio
 ```
 
 * **`pre_net`** compresses/rotates classical features into *qubit angles*; its weights are optimised alongside the circuit, allowing classical and quantum layers to co-adapt.  
-* **`qml.qnn.TorchLayer`** converts the QNode into a drop-in PyTorch sub-module, so gradients flow through the circuit via parameter-shift rules and standard autograd citeturn0search2.  
-* **`post_net` + `Sigmoid`** yield a probability for class 1 and enable using `BCELoss`, a stable formulation of logistic regression citeturn0search4.
+* **`qml.qnn.TorchLayer`** converts the QNode into a drop-in PyTorch sub-module, so gradients flow through the circuit via parameter-shift rules and standard autograd.  
+* **`post_net` + `Sigmoid`** yield a probability for class 1 and enable using `BCELoss`, a stable formulation of logistic regression.
 
 ---
 
 ## 4 Optimisation routine
 
-* **Adam** is chosen for its adaptive learning-rate schedule, which speeds convergence on mixed-scale parameter spaces common in hybrid models citeturn0search10.  
+* **Adam** is chosen for its adaptive learning-rate schedule, which speeds convergence on mixed-scale parameter spaces common in hybrid models.  
 * Loss falls monotonically from ≈0.88 to ≈0.67 over 20 epochs, confirming effective gradient flow despite the quantum layer.  
 * On the held-out 20 % test split, the script reports an accuracy of ∼(depends on seed, typically >80 %)—reasonable for such a shallow network.
 
@@ -220,7 +220,7 @@ The variational block follows the canonical three-step recipe—state preparatio
 ## 5 What is genuinely innovative?
 
 1. **Template-driven variational layer with minimal depth**  
-   Using `BasicEntanglerLayers` keeps circuit depth linear in qubit count and fits NISQ coherence budgets while still introducing entanglement—a sweet spot recently highlighted in empirical QML studies citeturn0search11.  
+   Using `BasicEntanglerLayers` keeps circuit depth linear in qubit count and fits NISQ coherence budgets while still introducing entanglement—a sweet spot recently highlighted in empirical QML studies.  
 
 2. **Classical-quantum co-evolution**  
    Unlike hard-coded data encodings, the learned `pre_net` tailors the *feature space* fed into the quantum layer, letting classical weights exploit directions where the variational ansatz is most expressive.  
@@ -229,7 +229,7 @@ The variational block follows the canonical three-step recipe—state preparatio
    Many academic examples rely on synthetic data; bridging to Iris shows immediate applicability and exposes the circuit to real-world feature correlations, a crucial step before moving to domain-specific corpora such as cloud-log anomalies.  
 
 4. **Mitigation of barren plateaus by architecture choice**  
-   Shallow depth (one layer) and small qubit count empirically reduce the risk of vanishing gradients that plague deeper variational circuits citeturn0search8.
+   Shallow depth (one layer) and small qubit count empirically reduce the risk of vanishing gradients that plague deeper variational circuits.
 
 ---
 
