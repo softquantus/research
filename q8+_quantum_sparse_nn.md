@@ -82,8 +82,8 @@ except ImportError:
     dev = qml.device("qiskit.aer", …)
 ```
 
-* The script first looks for **PennyLane-Lightning-GPU**, a cuQuantum-powered simulator that runs all linear-algebra on the GPU and supports fast *adjoint* differentiation — ideal when you have a CUDA card.citeturn6view0turn7search1  
-* If that plugin is not available it falls back to **Qiskit Aer** or finally the vanilla `default.qubit` CPU device. This progressive fallback pattern is standard for hybrid QML prototypes.citeturn7search0turn7search6  
+* The script first looks for **PennyLane-Lightning-GPU**, a cuQuantum-powered simulator that runs all linear-algebra on the GPU and supports fast *adjoint* differentiation — ideal when you have a CUDA card. 
+* If that plugin is not available it falls back to **Qiskit Aer** or finally the vanilla `default.qubit` CPU device. This progressive fallback pattern is standard for hybrid QML prototypes.
 
 ---
 
@@ -98,7 +98,7 @@ def quantum_circuit(inputs):
 * Each input is a **4-element vector** representing real angles.  
 * Only components whose absolute value exceeds 0.1 get encoded by a single-qubit **RY rotation** followed by a **CNOT** to the next wire, effectively creating *data-driven sparsity* in the circuit.  
 * The QNode returns the expectation ⟨Z⟩ of every qubit, so the quantum layer’s output dimension equals its input dimension.  
-* **Parameter-shift gradients** are requested, giving analytic derivatives without finite differences.citeturn3view0turn8search6  
+* **Parameter-shift gradients** are requested, giving analytic derivatives without finite differences.  
 
 ---
 
@@ -107,13 +107,13 @@ def quantum_circuit(inputs):
 | Block | Purpose |
 |-------|---------|
 | `nn.Linear(4,4)` → **Tanh** | Classical feature mixer. |
-| `mask = σ(α(|x|−0.1))` | **Soft-threshold gate** that pushes small activations toward zero, inspired by L0/soft-threshold sparsity literature.citeturn8search2turn8search0 |
-| `TorchLayer(quantum_circuit)` | Converts the QNode into a drop-in **PyTorch module**.citeturn2view0 |
+| `mask = σ(α(|x|−0.1))` | **Soft-threshold gate** that pushes small activations toward zero, inspired by L0/soft-threshold sparsity literature. |
+| `TorchLayer(quantum_circuit)` | Converts the QNode into a drop-in **PyTorch module**. |
 | `nn.Linear(4,2)` | Classical readout. |
 
 Key details:
 
-* **α** (initialised to 10) is a *trainable* temperature. A higher value makes the sigmoid steeper, approximating a hard threshold; lower α yields gradual pruning, akin to STR or L0 regularizers in sparse-training papers.citeturn8search4  
+* **α** (initialised to 10) is a *trainable* temperature. A higher value makes the sigmoid steeper, approximating a hard threshold; lower α yields gradual pruning, akin to STR or L0 regularizers in sparse-training papers. 
 * The loop `for sample in x:` feeds each *batch row* separately into the quantum simulator, because most PennyLane devices still expect 1-D inputs; batched simulators are in development but not default.  
 * All weights except α live in classical layers; the quantum circuit itself has **no trainable parameters** here (weight_shapes = {}), so the hybrid model is learning *when* to invoke quantum operations rather than *how* to rotate.  
 
@@ -142,7 +142,7 @@ model.classical_layer = quant.quantize_dynamic(...)
 model.classical_output = quant.quantize_dynamic(...)
 ```
 
-* **Dynamic quantization** turns `nn.Linear` weight matrices into INT8 while keeping activations in FP32, shrinking model size ~4× and speeding up CPU inference—often useful when the bottleneck is post-quantum classical layers.citeturn1view0turn5view0  
+* **Dynamic quantization** turns `nn.Linear` weight matrices into INT8 while keeping activations in FP32, shrinking model size ~4× and speeding up CPU inference—often useful when the bottleneck is post-quantum classical layers. 
 * Quantum ops remain untouched because today’s simulators and NISQ hardware don’t natively support INT8 arithmetic.
 
 ---
@@ -162,8 +162,8 @@ The printed output shows the backend selection, steady loss, and successful quan
 
 | Aspect | Value today | Action to reach visionary scale |
 |--------|-------------|----------------------------------|
-| **Sparsity mask** | Reduces superfluous quantum gates; differentiable. | Replace the hand-tuned 0.1 threshold with a learnable per-feature bias or an L0 regularizer for principled sparsity control.citeturn8search2 |
-| **Circuit capacity** | Fixed rotations; no trainable quantum weights. | Inject trainable parameters (`qml.Rot`, variational layers) and use *adjoint* gradients on `lightning.gpu` to learn richer quantum features.citeturn6view0 |
+| **Sparsity mask** | Reduces superfluous quantum gates; differentiable. | Replace the hand-tuned 0.1 threshold with a learnable per-feature bias or an L0 regularizer for principled sparsity control.  |
+| **Circuit capacity** | Fixed rotations; no trainable quantum weights. | Inject trainable parameters (`qml.Rot`, variational layers) and use *adjoint* gradients on `lightning.gpu` to learn richer quantum features. |
 | **Batch execution** | Serial loop over samples. | Switch to PennyLane `batch_execute` or tensor-network back-ends once they add native batching to amortize gate synthesis cost. |
 | **Toy data** | 10 random vectors. | Replace with a domain dataset (e.g., anomaly detection in cloud logs) to exploit quantum kernel advantages. |
 | **Quantization scope** | Only linear layers. | Explore *quantization-aware training* to minimise post-training accuracy drop before deploying on edge CPUs. |
