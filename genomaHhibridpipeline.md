@@ -4,23 +4,23 @@ The script is a **full-stack prototype** that simulates a population-scale genom
 
 ## 1  Data simulation and preprocessing
 
-The `load_genomic_data()` routine generates 1 000 synthetic genotype profiles coded as 0/1/2 (AA ∕ Aa ∕ aa)—a standard ordinal encoding used in GWAS pipelines to capture allele dosage citeturn1search0.  
-PCA reduces the 100 SNP columns to four principal components, mirroring how real biobanks tame *p ≫ n* data while preserving population structure citeturn0search5.  
-The five simulated populations (EUR, EAS, SAS, AMR, AFR) reflect the ancestry groups routinely analysed in modern consortia such as “All of Us” citeturn0search10.
+The `load_genomic_data()` routine generates 1 000 synthetic genotype profiles coded as 0/1/2 (AA ∕ Aa ∕ aa)—a standard ordinal encoding used in GWAS pipelines to capture allele dosage.  
+PCA reduces the 100 SNP columns to four principal components, mirroring how real biobanks tame *p ≫ n* data while preserving population structure.  
+The five simulated populations (EUR, EAS, SAS, AMR, AFR) reflect the ancestry groups routinely analysed in modern consortia such as “All of Us”.
 
 ### Why this matters  
-SNP matrices easily reach millions of columns; showing PCA→qubits bridges the dimensionality mismatch between genomics and today’s 4-–8-qubit NISQ devices. Research from 2024 confirms that hybrid QML can classify real genomic data after aggressive feature mapping citeturn0search2.
+SNP matrices easily reach millions of columns; showing PCA→qubits bridges the dimensionality mismatch between genomics and today’s 4-–8-qubit NISQ devices. Research from 2024 confirms that hybrid QML can classify real genomic data after aggressive feature mapping.
 
 ---
 
 ## 2  Hybrid resource manager and scheduler
 
 ### 2.1 Resource allocation  
-`HybridResourceManager` tracks four virtual QPUs, one GPU, and one CPU, exposing `allocate_resource()` and `release_resource()` under a thread lock—textbook *producer–consumer with critical sections* citeturn0search4.
+`HybridResourceManager` tracks four virtual QPUs, one GPU, and one CPU, exposing `allocate_resource()` and `release_resource()` under a thread lock—textbook *producer–consumer with critical sections*.
 
 ### 2.2 Task queue with retries  
 `HybridScheduler` spawns four daemon threads, each pulling `(task, args, type)` tuples off a `queue.Queue`.  
-If no QPU is free, the worker backs off 0.5 s and retries up to three times; failures are counted in `failed_tasks`, emulating fault-tolerant schedulers used in Trino, Braket Direct, and academic QPU schedulers citeturn0search8turn0search9turn0search3.
+If no QPU is free, the worker backs off 0.5 s and retries up to three times; failures are counted in `failed_tasks`, emulating fault-tolerant schedulers used in Trino, Braket Direct, and academic QPU schedulers.
 
 ### 2.3 Why it’s new  
 Most QML demos assume *one* device; by orchestrating a *pool* of quantum and classical processors, the code sketches the very resource manager data centres will need when QPUs become just another accelerator.
@@ -31,12 +31,12 @@ Most QML demos assume *one* device; by orchestrating a *pool* of quantum and cla
 
 | Stage | Operation | Source |
 |-------|-----------|--------|
-| **Classical encoder** | Linear → ReLU → Dropout(0.3) (regularises small genomic batches) | citeturn0search5 |
-| **Quantum circuit** | `AngleEmbedding(rotation='Y')` maps 4 PCA scores to rotations citeturn0search1 | |
-| | 2-layer **Strongly Entangling Layers** for expressivity with shallow depth citeturn0search0 |
+| **Classical encoder** | Linear → ReLU → Dropout(0.3) (regularises small genomic batches) ||
+| **Quantum circuit** | `AngleEmbedding(rotation='Y')` maps 4 PCA scores to rotations| |
+| | 2-layer **Strongly Entangling Layers** for expressivity with shallow depth|
 | **Classifier** | Linear → ReLU → Linear → LogSoftmax | – |
 
-Each sample is normalised, queued, and processed on the first available QPU thread.  This asynchronous per-sample call hides device latency and maximises throughput—akin to batch dispatch in QSRA and Braket Hybrid Jobs citeturn0search3turn0search9.
+Each sample is normalised, queued, and processed on the first available QPU thread.  This asynchronous per-sample call hides device latency and maximises throughput—akin to batch dispatch in QSRA and Braket Hybrid Jobs.
 
 ---
 
@@ -46,16 +46,16 @@ Each sample is normalised, queued, and processed on the first available QPU thre
 The script fuses *systems* and *science*: queue time-outs, retries, and busy/idle bookkeeping model real cloud orchestration, not notebook-level experiments.
 
 ### 4.2 Hardware-agnostic load balancing  
-By falling back to GPUs/CPUs when QPUs are saturated, the pipeline guarantees forward progress—an approach advocated in recent QPU scheduling literature citeturn0search3.
+By falling back to GPUs/CPUs when QPUs are saturated, the pipeline guarantees forward progress—an approach advocated in recent QPU scheduling literature.
 
 ### 4.3 Fault tolerance  
-Tasks that raise exceptions are retried up to three times and counted; such accounting echoes fault-tolerant execution engines in modern data platforms citeturn0search8.
+Tasks that raise exceptions are retried up to three times and counted; such accounting echoes fault-tolerant execution engines in modern data platforms.
 
 ### 4.4 Genomics use-case  
-Demonstrates that a *qubit-bounded* circuit plus classical layers can already tackle multi-population genotype classification, a problem space where classical ML often battles high-dimensional sparsity citeturn1search3turn1search5.
+Demonstrates that a *qubit-bounded* circuit plus classical layers can already tackle multi-population genotype classification, a problem space where classical ML often battles high-dimensional sparsity.
 
 ### 4.5 Research convergence  
-The code reflects current findings that SEL ansätze mitigate barren plateaus while retaining expressivity citeturn0search8, and that PCA-compressed SNP signals remain predictive when fed into QNNs citeturn1search7.
+The code reflects current findings that SEL ansätze mitigate barren plateaus while retaining expressivity, and that PCA-compressed SNP signals remain predictive when fed into QNNs.
 
 ---
 
@@ -71,7 +71,7 @@ The code reflects current findings that SEL ansätze mitigate barren plateaus wh
 
 ## 6  Limitations & next steps
 
-* **Global Interpreter Lock** means true Python threads won’t parallelise CPU-bound work; migrating workers to `multiprocessing` or `asyncio` would unlock cores citeturn0search4.  
+* **Global Interpreter Lock** means true Python threads won’t parallelise CPU-bound work; migrating workers to `multiprocessing` or `asyncio` would unlock cores.  
 * **Toy PCA + random SNPs** should be replaced with a real biobank matrix (e.g., UK Biobank) and supervised dimensionality reduction.  
 * **Static circuit weights**—currently drawn from `torch.randn`—should be made trainable; PennyLane supports passing a weight tensor via `weight_shapes`.  
 * **Persistent queue**: for production, tasks and results would live in Redis or RabbitMQ, not an in-memory queue.
@@ -255,9 +255,9 @@ torch.save(model.state_dict(), 'quantum_hybrid_model.pth')
    weight_shapes = {}              # nothing to train
    StronglyEntanglingLayers(weights=torch.randn(...))  # new random tensor every call
    ```  
-   The circuit outputs noise; gradients cannot shape it.citeturn0search3
+   The circuit outputs noise; gradients cannot shape it.
 
-3. **Python GIL + threading** – CPU-bound PennyLane simulators still respect the Global Interpreter Lock, so your four “parallel” threads effectively time-slice one core.citeturn0search0turn0search5
+3. **Python GIL + threading** – CPU-bound PennyLane simulators still respect the Global Interpreter Lock, so your four “parallel” threads effectively time-slice one core.
 
 4. **Race-free but unsynchronised results list** – `list.append()` is atomic in CPython, but there is no **blocking join** to ensure all tasks finish before the next training step.
 
@@ -295,12 +295,12 @@ batched_outputs = self.quantum_layer(x)   # x has shape [B, 4]
 return self.classifier(batched_outputs)
 ```
 
-PennyLane 0.41 supports batched execution on state-vector back-ends; one QNode call now processes the **whole batch in one GPU/CPU pass**, eliminating 1 000 task objects and the queue entirely.citeturn0search13
+PennyLane 0.41 supports batched execution on state-vector back-ends; one QNode call now processes the **whole batch in one GPU/CPU pass**, eliminating 1 000 task objects and the queue entirely.
 
 ### 4-b If you must keep the queue
 
 * Raise `timeout` or make it adaptive to batch size.  
-* Replace `threading` with `multiprocessing` or `asyncio` to bypass the GIL.citeturn0search5  
+* Replace `threading` with `multiprocessing` or `asyncio` to bypass the GIL. 
 * Call `task_queue.join()` inside `forward()` (and use `task_done()` in workers) so the training loop blocks until all samples finish—no more padding with zeros.
 
 ### 4-c True hybrid fallback
@@ -320,7 +320,7 @@ if not resource_id and task_type == "quantum":
 
 | Current | Recommended |
 |---------|-------------|
-| `lr = 0.005`, no scheduler | Use AdamW 1e-3 with `torch.optim.lr_scheduler.CosineAnnealingLR` or `ReduceLROnPlateau`.citeturn0search9 |
+| `lr = 0.005`, no scheduler | Use AdamW 1e-3 with `torch.optim.lr_scheduler.CosineAnnealingLR` or `ReduceLROnPlateau`.|
 | Dropout 0.3 on 1 000 tiny samples | Lower to 0.1 or disable; PCA is already a strong reducer. |
 | 30 epochs | With trainable quantum weights and full batches, 50–100 epochs converge. |
 
