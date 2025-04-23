@@ -11,31 +11,31 @@ After training, it prints fold-level metrics, averages them, and saves the learn
 
 | Upgrade | What it does | Why it is market-relevant |
 |---------|--------------|---------------------------|
-| **Dropout 0.3** in the classical encoder | Randomly discards neurons during training to prevent co-adaptation | Proven to slash over-fitting on small datasets citeturn1search0 |
-| **Weight-decay 1e-4** (L2) in Adam | Penalises large weights during optimisation | Gives smoother minima; Adam supports it natively citeturn1search1 |
-| **Kaiming normal init** for `tanh` layers | Scales variance by fan-in, avoiding saturation | Recognised best-practice for deep nets citeturn1search2 |
-| **Small-σ (0.1) init** for quantum weights | Keeps circuit in linear-response zone | Mitigates barren plateaus in shallow VQCs citeturn2search3 |
-| **Early stopping (patience 10)** | Halts training when val-loss stagnates | Cuts compute cost, a must for paid QPU time citeturn1search4turn1search9 |
-| **Stratified 5-fold CV** | Maintains class balance in every split | Gold-standard evaluation citeturn0search6 |
-| **Full metric suite** (Precision, Recall, F1, confusion matrix) | Surfaces class-imbalanced failure modes | Required in regulated verticals (health, finance) citeturn1search3turn1search8 |
+| **Dropout 0.3** in the classical encoder | Randomly discards neurons during training to prevent co-adaptation | Proven to slash over-fitting on small datasets|
+| **Weight-decay 1e-4** (L2) in Adam | Penalises large weights during optimisation | Gives smoother minima; Adam supports it natively|
+| **Kaiming normal init** for `tanh` layers | Scales variance by fan-in, avoiding saturation | Recognised best-practice for deep nets|
+| **Small-σ (0.1) init** for quantum weights | Keeps circuit in linear-response zone | Mitigates barren plateaus in shallow VQCs|
+| **Early stopping (patience 10)** | Halts training when val-loss stagnates | Cuts compute cost, a must for paid QPU time|
+| **Stratified 5-fold CV** | Maintains class balance in every split | Gold-standard evaluation|
+| **Full metric suite** (Precision, Recall, F1, confusion matrix) | Surfaces class-imbalanced failure modes | Required in regulated verticals (health, finance)|
 
 ---
 
 ## 2  Deep dive: how the code flows
 
 ### 2.1 Classical front-end  
-* Two linear layers (4 → 8 → 4) with `tanh` non-linearity, Dropout, and Kaiming initialisation ensure richer feature mixing without exploding gradients. citeturn1search2  
+* Two linear layers (4 → 8 → 4) with `tanh` non-linearity, Dropout, and Kaiming initialisation ensure richer feature mixing without exploding gradients.
 
 ### 2.2 Quantum core  
 * **`AngleEmbedding`** writes scaled features to Y-rotations. citeturn2search2  
-* **`BasicEntanglerLayers`** (2 layers, ring CNOT topology) inject entanglement with only one trainable angle per qubit, minimising depth and gate noise. citeturn2search0  
-* Empirical and theoretical work shows such shallow circuits stay out of the barren-plateau regime while remaining expressive enough for tabular data. citeturn2search3turn2search8  
+* **`BasicEntanglerLayers`** (2 layers, ring CNOT topology) inject entanglement with only one trainable angle per qubit, minimising depth and gate noise.
+* Empirical and theoretical work shows such shallow circuits stay out of the barren-plateau regime while remaining expressive enough for tabular data.
 
 ### 2.3 Training loop  
 Early-stopping hooks check validation loss every epoch; if no improvement for 10 rounds the fold terminates—saving up to 70 % of simulator or QPU cycles in easy folds.
 
 ### 2.4 Observability  
-Precision, recall and F1 are computed each fold; the “problematic” fold’s confusion matrix is cached for root-cause analysis—mirroring MLOps dashboards in production. citeturn1search3  
+Precision, recall and F1 are computed each fold; the “problematic” fold’s confusion matrix is cached for root-cause analysis—mirroring MLOps dashboards in production. 
 
 ---
 
@@ -44,9 +44,9 @@ Precision, recall and F1 are computed each fold; the “problematic” fold’s 
 | Solution | Qubits / params | Depth | Mean CV Acc. | Training safeguards | Deployment weight |
 |----------|-----------------|-------|--------------|---------------------|-------------------|
 | **This script** | 4 / < 100 | 2 SEL layers | 0.90 ± 0.20 | Dropout, weight-decay, early-stop, CV | < 10 KB `.pth` |
-| Qiskit VQC default (EfficientSU2) | 4 – 8 / > 300 | ≥ 8 layers | 0.85 – 0.92 | No dropout, no ES | > 30 KB; slower simulators citeturn2search7 |
-| Amazon Braket Hybrid Job sample | 8 qubits / 200+ | 4-6 layers | 0.82 (reported) | Basic val-split, no ES | Job-specific container citeturn0search8 |
-| Zapata Orquestra workflow | 6 qubits / 250 | variable | 0.83 (demo) | External tuning service | YAML + cloud licence citeturn0search9 |
+| Qiskit VQC default (EfficientSU2) | 4 – 8 / > 300 | ≥ 8 layers | 0.85 – 0.92 | No dropout, no ES | > 30 KB; slower simulators|
+| Amazon Braket Hybrid Job sample | 8 qubits / 200+ | 4-6 layers | 0.82 (reported) | Basic val-split, no ES | Job-specific container|
+| Zapata Orquestra workflow | 6 qubits / 250 | variable | 0.83 (demo) | External tuning service | YAML + cloud licence |
 
 **Net takeaway:** you get *equal or better* accuracy with **≤ one-third** the parameters, **≤ one-quarter** the depth, and built-in MLOps hooks—lowering both compute cost and integration time.
 
@@ -55,10 +55,10 @@ Precision, recall and F1 are computed each fold; the “problematic” fold’s 
 ## 4  Strategic market advantages
 
 ### 4.1 QPU-minute economics  
-Early stopping and small circuits cut paid QPU runtime dramatically, a differentiator as cloud providers move to per-second billing citeturn2search9.
+Early stopping and small circuits cut paid QPU runtime dramatically, a differentiator as cloud providers move to per-second billing.
 
 ### 4.2 Ready for hybrid super-computing  
-RIKEN and others are standing up hybrid quantum-HPC platforms; shallow circuits slot cleanly into their batch schedulers where deep circuits time-out citeturn2search14turn2search7.
+RIKEN and others are standing up hybrid quantum-HPC platforms; shallow circuits slot cleanly into their batch schedulers where deep circuits time-out.
 
 ### 4.3 Compliance by design  
 Storing confusion matrices for suspect folds addresses EU’s upcoming AI Liability Directive, which mandates error traceability in high-risk systems.
@@ -70,8 +70,8 @@ The final `.pth` weighs <10 KB and needs only PennyLane + PyTorch to run; contra
 
 ## 5  Where to extend next
 
-* **Batch QNode execution** – switch to PennyLane’s batched interface to exploit GPU simulators and shrink epoch time further citeturn2search1.  
-* **Dynamic INT8 quantisation** – run `torch.quantization.quantize_dynamic` on `post_net` for CPU-edge inference citeturn1search1.  
+* **Batch QNode execution** – switch to PennyLane’s batched interface to exploit GPU simulators and shrink epoch time further.  
+* **Dynamic INT8 quantisation** – run `torch.quantization.quantize_dynamic` on `post_net` for CPU-edge inference.  
 * **Auto-hyperparam search** – integrate `optuna` or `Ray Tune`; early-stop already makes such searches far cheaper.  
 * **Device swap** – replace `"default.qubit"` with a Braket or Quantinuum backend string and let a scheduler (e.g., Softquantus) handle the rest; shallow depth keeps queue latency acceptable.
 
@@ -480,31 +480,31 @@ if __name__ == "__main__":
 ## 1  Market-ready application areas
 
 ### Digital-payments & fraud analytics  
-Hybrid QNNs have already been piloted by Deloitte Italy on Amazon Braket to boost card-fraud detection accuracy while trimming model size.citeturn0search0  
+Hybrid QNNs have already been piloted by Deloitte Italy on Amazon Braket to boost card-fraud detection accuracy while trimming model size.
 Softquantus shallow-depth network—equipped with dropout, L2 and early-stop—fits the same real-time risk-scoring pipelines without blowing up qubit budgets.
 
 ### Credit-risk / banking  
-Recent studies show quantum-enhanced scoring frameworks (Systemic Quantum Score, quantum deep learning) outperform classical baselines for PD-estimation on imbalanced tabular sets.citeturn0search10turn0search21  
+Recent studies show quantum-enhanced scoring frameworks (Systemic Quantum Score, quantum deep learning) outperform classical baselines for PD-estimation on imbalanced tabular sets.
 Because Softquantus model has <100 trainable weights, it can run inside latency-sensitive loan-origination systems for on-device pre-screening.
 
 ### Genomics & precision-medicine  
-Variational quantum classifiers have been used for population-stratification and SNP analysis, where data are high-dimensional but sample-poor.citeturn0search1  
+Variational quantum classifiers have been used for population-stratification and SNP analysis, where data are high-dimensional but sample-poor. 
 The script’s PCA → AngleEmbedding pipeline is a ready-made starting point for ancestry inference, rare-variant calling or gene-expression sub-typing.
 
 ### Cyber-threat detection  
-Quantum outlier-analysis networks have demonstrated superior DDoS and anomaly detection in live packet streams.citeturn0search2  
-Softquantus lightweight circuit can slot into SIEM appliances, adding a quantum “first-look” filter before heavier deep-learning stages.citeturn0news115
+Quantum outlier-analysis networks have demonstrated superior DDoS and anomaly detection in live packet streams.
+Softquantus lightweight circuit can slot into SIEM appliances, adding a quantum “first-look” filter before heavier deep-learning stages.
 
 ### Industrial predictive maintenance  
-Self-supervised QML has been proposed for detecting vibration/temperature anomalies on the factory floor.citeturn0search4  
+Self-supervised QML has been proposed for detecting vibration/temperature anomalies on the factory floor.
 The low-parameter post-net can be INT8-quantised, making the whole model deployable on ARM or FPGA edge boxes beside the sensor.
 
 ### Energy-grid load forecasting  
-A 2025 Scientific Reports paper shows quantum AI beating classical RNNs for short-term load prediction.citeturn0search8  
+A 2025 Scientific Reports paper shows quantum AI beating classical RNNs for short-term load prediction.
 Softquantus circuit—once trained on time-series embeddings—could serve regional utilities that need minute-scale forecasts without GPU farms.
 
 ### Supply-chain optimisation signals  
-Quantum pattern recognition is being explored to flag demand shocks and logistics bottlenecks.citeturn0search7  
+Quantum pattern recognition is being explored to flag demand shocks and logistics bottlenecks.
 Use the current model as a fast anomaly detector that decides when to trigger heavier optimisation solvers.
 
 ---
@@ -513,10 +513,10 @@ Use the current model as a fast anomaly detector that decides when to trigger he
 
 | Research question | Why Softquantus code is a fit |
 |-------------------|------------------------|
-| **Benchmarking shallow vs. deep VQCs** | Depth-2 SEL matches the “shallow advantage” line of work in Science & QuTech papers.citeturn0search9turn0search20 |
-| **Tabular QML baselines** | Community calls for light, reproducible Iris-style baselines.citeturn0search5 |
-| **Barren-plateau mitigation** | Small-σ weight init + dropout create an empirical test-bed for recent theoretical claims.citeturn0search3 |
-| **Edge-device quantum inference** | Model size < 10 kB; perfect for studies on hybrid edge AI.citeturn0search6 |
+| **Benchmarking shallow vs. deep VQCs** | Depth-2 SEL matches the “shallow advantage” line of work in Science & QuTech papers.|
+| **Tabular QML baselines** | Community calls for light, reproducible Iris-style baselines.|
+| **Barren-plateau mitigation** | Small-σ weight init + dropout create an empirical test-bed for recent theoretical claims.|
+| **Edge-device quantum inference** | Model size < 10 kB; perfect for studies on hybrid edge AI.|
 | **Autonomous early-stopping policies** | Patience-10 hook provides data for meta-research on QPU-minute optimisation. |
 
 ---
@@ -533,7 +533,7 @@ Use the current model as a fast anomaly detector that decides when to trigger he
 | Metrics logged | Accuracy, **Precision, Recall, F1, ConfMat** | Accuracy only |
 | Checkpoint size | **< 10 kB** | 30 – 50 kB |
 
-Smaller depth means ≈8× fewer CNOTs and proportionally less QPU billing time—a concrete dollars-and-cents edge when providers move to per-second pricing.citeturn0search9
+Smaller depth means ≈8× fewer CNOTs and proportionally less QPU billing time—a concrete dollars-and-cents edge when providers move to per-second pricing.
 
 ---
 
