@@ -26,7 +26,7 @@ After training, it prints fold-level metrics, averages them, and saves the learn
 * Two linear layers (4 → 8 → 4) with `tanh` non-linearity, Dropout, and Kaiming initialisation ensure richer feature mixing without exploding gradients.
 
 ### 2.2 Quantum core  
-* **`AngleEmbedding`** writes scaled features to Y-rotations. citeturn2search2  
+* **`AngleEmbedding`** writes scaled features to Y-rotations.  
 * **`BasicEntanglerLayers`** (2 layers, ring CNOT topology) inject entanglement with only one trainable angle per qubit, minimising depth and gate noise.
 * Empirical and theoretical work shows such shallow circuits stay out of the barren-plateau regime while remaining expressive enough for tabular data.
 
