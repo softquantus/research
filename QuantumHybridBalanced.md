@@ -1,27 +1,29 @@
+# Quantum-Enhanced Equity Return Prediction: Front-to-Back Prototype
+
 The revised script is a **concise, production-oriented hybrid model that learns to separate the two Iris species with only four trainable qubits and ~50 classical parameters, while following mainstream deep-learning hygiene (proper weight-init, balanced CV, standardization, Adam, BCELoss)**.  Compared with your earlier resource-balancing prototype, every component that blocked learning has been repaired or tightened.  Below I unpack the code line-by-line, explain why each change matters, and show exactly how to run or extend the file.
 
 ## 1  What the script does—high-level
 
-1. **Loads a balanced binary subset (Setosa / Versicolor) of the Iris data** and standardises all four features so they map cleanly to rotation angles.citeturn1search5turn0search8  
-2. **Wraps a 4-qubit, 2-layer variational circuit** (`AngleEmbedding` + `BasicEntanglerLayers`) as a `TorchLayer`, this time with **trainable weights** correctly initialised near 0 to avoid barren-plateau issues.citeturn0search2turn0search0turn1search4  
-3. **Stacks the circuit inside a minimal classical “pre” and “post” network**, producing one logit that feeds `sigmoid` and `BCELoss`—the standard loss for binary classification.citeturn0search5  
-4. **Trains with Adam** for 50 epochs inside **5-fold Stratified CV**, giving an unbiased accuracy estimate with balanced class splits.citeturn0search4turn0search3turn1search6  
-5. Saves the learned weights with `torch.save`, so you can reload the quantum classifier elsewhere.citeturn1search8  
+1. **Loads a balanced binary subset (Setosa / Versicolor) of the Iris data** and standardises all four features so they map cleanly to rotation angles.  
+2. **Wraps a 4-qubit, 2-layer variational circuit** (`AngleEmbedding` + `BasicEntanglerLayers`) as a `TorchLayer`, this time with **trainable weights** correctly initialised near 0 to avoid barren-plateau issues.  
+3. **Stacks the circuit inside a minimal classical “pre” and “post” network**, producing one logit that feeds `sigmoid` and `BCELoss`—the standard loss for binary classification.  
+4. **Trains with Adam** for 50 epochs inside **5-fold Stratified CV**, giving an unbiased accuracy estimate with balanced class splits. 
+5. Saves the learned weights with `torch.save`, so you can reload the quantum classifier elsewhere. 
 
 ## 2  Key fixes & why they matter
 
 | Old issue | New solution | Impact |
 |-----------|--------------|--------|
-| **Random, non-persistent weights** in the quantum layer ➜ noise | `weight_shapes = {"weights": (n_layers, n_qubits)}` plus `init_method=lambda _: 0.05*torch.randn(...)` | Gives *trainable* parameters; tiny σ = 0.05 keeps gradients in the linear regime, a widely recommended heuristic.citeturn1search7 |
-| **StronglyEntanglingLayers depth 3** (costly) | **BasicEntanglerLayers depth 2** | Same expressive family but lower gate count → faster simulation and smaller gradient variance.citeturn0search0turn1search0 |
+| **Random, non-persistent weights** in the quantum layer ➜ noise | `weight_shapes = {"weights": (n_layers, n_qubits)}` plus `init_method=lambda _: 0.05*torch.randn(...)` | Gives *trainable* parameters; tiny σ = 0.05 keeps gradients in the linear regime, a widely recommended heuristic. |
+| **StronglyEntanglingLayers depth 3** (costly) | **BasicEntanglerLayers depth 2** | Same expressive family but lower gate count → faster simulation and smaller gradient variance. |
 | **No dimension fix** → Torch complained at `Linear(1,1)` | `x = x.unsqueeze(1)` | Ensures `post_net` receives shape (B, 1), preventing silent broadcast errors. |
-| **Learning stalls** (0.20 accuracy) | Proper initialisation + Adam(0.01) | With working gradients, Iris binary tasks typically reach ≥ 0.95 in < 50 epochs.citeturn0search6turn0search9 |
+| **Learning stalls** (0.20 accuracy) | Proper initialisation + Adam(0.01) | With working gradients, Iris binary tasks typically reach ≥ 0.95 in < 50 epochs. |
 
 ## 3  Why this is a meaningful advance
 
-* **Demonstrates best-practice QML engineering**—balanced CV, standard scaler, explicit weight-init—bridging the gap between academic toy demos and deployable models.citeturn0search6turn1search3  
-* **Uses the lightest expressive ansatz that still captures non-linear boundaries**, aligning with recent findings that shallow circuits outperform deeper ones on small tabular sets.citeturn0search9turn0search10  
-* **Produces a portable `.pth` checkpoint** you can ship to any edge or cloud service that houses a PennyLane backend, meeting real DevOps requirements.citeturn1search8  
+* **Demonstrates best-practice QML engineering**—balanced CV, standard scaler, explicit weight-init—bridging the gap between academic toy demos and deployable models.  
+* **Uses the lightest expressive ansatz that still captures non-linear boundaries**, aligning with recent findings that shallow circuits outperform deeper ones on small tabular sets.  
+* **Produces a portable `.pth` checkpoint** you can ship to any edge or cloud service that houses a PennyLane backend, meeting real DevOps requirements.  
 
 ## 4  How to call or extend the code
 
@@ -34,7 +36,7 @@ pip install pennylane torch scikit-learn
 python iris_quantum_hybrid.py    # file name of the script
 ```
 
-> The `if __name__ == "__main__"` guard lets you both **run** and **import** the file.citeturn0search0  
+> The `if __name__ == "__main__"` guard lets you both **run** and **import** the file.  
 
 ### 4.2 Reload the trained model elsewhere
 
@@ -59,7 +61,7 @@ Because the circuit returns one scalar, you can swap `QuantumHybrid` for `nn.Seq
 
 ## 5  Next steps toward production
 
-1. **Swap `default.qubit` for GPU (`lightning.gpu`)** to cut training time by ~10× on a modern RTX card.citeturn1search3  
+1. **Swap `default.qubit` for GPU (`lightning.gpu`)** to cut training time by ~10× on a modern RTX card.  
 2. **Integrate StratifiedKFold into a Ray Tune search** for automated LR and weight-init sweeps.  
 3. **Quantise the post_net INT8** (PyTorch `quantize_dynamic`) to compress the classical head before edge deployment.
 
@@ -327,14 +329,14 @@ if __name__ == "__main__":
 ## 1 Why the warnings and flat accuracy persist  
 
 ### 1.1 Scheduler still discards 80 % of data  
-`queue.get(timeout=10)` + four Python threads means you can run **max-throughput ≈ 4 × 10 s⁄circuit-latency** during that window; the rest expire and trigger the “amostras não processadas” warning.  Python threads contend for the **GIL**, so a single CPU core ultimately executes all circuits citeturn0search2turn0search10.
+`queue.get(timeout=10)` + four Python threads means you can run **max-throughput ≈ 4 × 10 s⁄circuit-latency** during that window; the rest expire and trigger the “amostras não processadas” warning.  Python threads contend for the **GIL**, so a single CPU core ultimately executes all circuits.
 
 ### 1.2 Quantum layer remains untrainable  
-The circuit is rebuilt at every forward pass with **fresh random weights** because `weight_shapes={}` in your earlier version and because you call `qml.BasicEntanglerLayers` without passing the trainable `weights` argument citeturn0search1turn0search0.  
-Gradients flow through *inputs* only, so the QNode outputs near-constant noise → network cannot reduce BCE loss citeturn0search5.
+The circuit is rebuilt at every forward pass with **fresh random weights** because `weight_shapes={}` in your earlier version and because you call `qml.BasicEntanglerLayers` without passing the trainable `weights` argument .  
+Gradients flow through *inputs* only, so the QNode outputs near-constant noise → network cannot reduce BCE loss.
 
 ### 1.3 Result list is not synchronised  
-You append to a Python list from multiple threads but never `join()` the queue; the training loop proceeds before all tasks finish citeturn0search3.
+You append to a Python list from multiple threads but never `join()` the queue; the training loop proceeds before all tasks finish.
 
 ---
 
@@ -342,11 +344,11 @@ You append to a Python list from multiple threads but never `join()` the queue; 
 
 | Fix | Why it works | References |
 |-----|--------------|------------|
-| **Vectorise the QNode and remove the queue**<br/>`outputs = self.quantum_layer(x)` | PennyLane 0.41 supports **batched execution**, running the whole mini-batch in one call and slashing latency citeturn0search4 | Pennylane blog on batch execution |
-| **Make weights trainable & persistent**<br/>```python<br/>weight_shapes = {"weights": (n_layers, n_qubits)}<br/>self.qlayer = qml.qnn.TorchLayer(quantum_circuit, weight_shapes)<br/>``` | TorchLayer now allocates a *single* parameter tensor that autograd can update each epoch citeturn0search1 | |
-| **Block until all tasks finish (if you keep queue)**<br/>```python<br/>self.resource_manager.task_queue.join()<br/>```<br/>and call `task_done()` in the worker | Guarantees every sample is processed; no zero-padding step needed citeturn0search3 | |
+| **Vectorise the QNode and remove the queue**<br/>`outputs = self.quantum_layer(x)` | PennyLane 0.41 supports **batched execution**, running the whole mini-batch in one call and slashing latency  | Pennylane blog on batch execution |
+| **Make weights trainable & persistent**<br/>```python<br/>weight_shapes = {"weights": (n_layers, n_qubits)}<br/>self.qlayer = qml.qnn.TorchLayer(quantum_circuit, weight_shapes)<br/>``` | TorchLayer now allocates a *single* parameter tensor that autograd can update each epoch | |
+| **Block until all tasks finish (if you keep queue)**<br/>```python<br/>self.resource_manager.task_queue.join()<br/>```<br/>and call `task_done()` in the worker | Guarantees every sample is processed; no zero-padding step needed  | |
 
-Optional: switch to **multiprocessing** if you must parallelise CPU simulation; it bypasses the GIL citeturn0search2turn0search10.
+Optional: switch to **multiprocessing** if you must parallelise CPU simulation; it bypasses the GIL.
 
 ---
 
@@ -373,20 +375,20 @@ With this change you can delete the entire `HybridScheduler` class and resource 
 | Accuracy | 0.22 | **≥ 0.95** on Iris binary; ≥ 0.60 on 5-way synthetic SNPs |
 | QPU utilisation | 4/4 busy (CPU bound) | Single vectorised call; GPU/CPU < 1 s |
 
-These targets echo peer-reviewed Iris QML benchmarks that reach 95-97 % with shallow circuits citeturn0search6.
+These targets echo peer-reviewed Iris QML benchmarks that reach 95-97 % with shallow circuits.
 
 ---
 
 ## 5 Extra polish for production
 
-1. **Standardized inputs** – you already apply `StandardScaler`; good practice and required for stable AngleEmbedding citeturn0search7.  
-2. **Learning-rate control** – Adam’s internal schedule is often enough, but `ReduceLROnPlateau` can still help for small datasets citeturn0search8.  
+1. **Standardized inputs** – you already apply `StandardScaler`; good practice and required for stable AngleEmbedding .  
+2. **Learning-rate control** – Adam’s internal schedule is often enough, but `ReduceLROnPlateau` can still help for small datasets.  
 3. **Quantise post-net** for edge deployment:  
    ```python
    model.post_net = torch.quantization.quantize_dynamic(
        model.post_net, {nn.Linear}, dtype=torch.qint8)
    ```  
-   Dynamic INT8 cuts RAM and speeds CPU inference citeturn0search11.
+   Dynamic INT8 cuts RAM and speeds CPU inference.
 
 ---
 
