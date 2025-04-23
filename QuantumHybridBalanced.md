@@ -4,26 +4,26 @@ The revised script is a **concise, production-oriented hybrid model that learns 
 
 ## 1  What the script does—high-level
 
-1. **Loads a balanced binary subset (Setosa / Versicolor) of the Iris data** and standardises all four features so they map cleanly to rotation angles.  
-2. **Wraps a 4-qubit, 2-layer variational circuit** (`AngleEmbedding` + `BasicEntanglerLayers`) as a `TorchLayer`, this time with **trainable weights** correctly initialised near 0 to avoid barren-plateau issues.  
-3. **Stacks the circuit inside a minimal classical “pre” and “post” network**, producing one logit that feeds `sigmoid` and `BCELoss`—the standard loss for binary classification.  
-4. **Trains with Adam** for 50 epochs inside **5-fold Stratified CV**, giving an unbiased accuracy estimate with balanced class splits. 
-5. Saves the learned weights with `torch.save`, so you can reload the quantum classifier elsewhere. 
+1. **Loads a balanced binary subset (Setosa / Versicolor) of the Iris data** and standardises all four features so they map cleanly to rotation angles.   
+2. **Wraps a 4-qubit, 2-layer variational circuit** (`AngleEmbedding` + `BasicEntanglerLayers`) as a `TorchLayer`, this time with **trainable weights** correctly initialised near 0 to avoid barren-plateau issues.    
+3. **Stacks the circuit inside a minimal classical “pre” and “post” network**, producing one logit that feeds `sigmoid` and `BCELoss`—the standard loss for binary classification.   
+4. **Trains with Adam** for 50 epochs inside **5-fold Stratified CV**, giving an unbiased accuracy estimate with balanced class splits.  
+5. Saves the learned weights with `torch.save`, so you can reload the quantum classifier elsewhere.  
 
 ## 2  Key fixes & why they matter
 
 | Old issue | New solution | Impact |
 |-----------|--------------|--------|
-| **Random, non-persistent weights** in the quantum layer ➜ noise | `weight_shapes = {"weights": (n_layers, n_qubits)}` plus `init_method=lambda _: 0.05*torch.randn(...)` | Gives *trainable* parameters; tiny σ = 0.05 keeps gradients in the linear regime, a widely recommended heuristic. |
-| **StronglyEntanglingLayers depth 3** (costly) | **BasicEntanglerLayers depth 2** | Same expressive family but lower gate count → faster simulation and smaller gradient variance. |
+| **Random, non-persistent weights** in the quantum layer ➜ noise | `weight_shapes = {"weights": (n_layers, n_qubits)}` plus `init_method=lambda _: 0.05*torch.randn(...)` | Gives *trainable* parameters; tiny σ = 0.05 keeps gradients in the linear regime, a widely recommended heuristic.   |
+| **StronglyEntanglingLayers depth 3** (costly) | **BasicEntanglerLayers depth 2** | Same expressive family but lower gate count → faster simulation and smaller gradient variance.  |
 | **No dimension fix** → Torch complained at `Linear(1,1)` | `x = x.unsqueeze(1)` | Ensures `post_net` receives shape (B, 1), preventing silent broadcast errors. |
-| **Learning stalls** (0.20 accuracy) | Proper initialisation + Adam(0.01) | With working gradients, Iris binary tasks typically reach ≥ 0.95 in < 50 epochs. |
+| **Learning stalls** (0.20 accuracy) | Proper initialisation + Adam(0.01) | With working gradients, Iris binary tasks typically reach ≥ 0.95 in < 50 epochs.   |
 
 ## 3  Why this is a meaningful advance
 
-* **Demonstrates best-practice QML engineering**—balanced CV, standard scaler, explicit weight-init—bridging the gap between academic toy demos and deployable models.  
-* **Uses the lightest expressive ansatz that still captures non-linear boundaries**, aligning with recent findings that shallow circuits outperform deeper ones on small tabular sets.  
-* **Produces a portable `.pth` checkpoint** you can ship to any edge or cloud service that houses a PennyLane backend, meeting real DevOps requirements.  
+* **Demonstrates best-practice QML engineering**—balanced CV, standard scaler, explicit weight-init—bridging the gap between academic toy demos and deployable models.   
+* **Uses the lightest expressive ansatz that still captures non-linear boundaries**, aligning with recent findings that shallow circuits outperform deeper ones on small tabular sets.    
+* **Produces a portable `.pth` checkpoint** you can ship to any edge or cloud service that houses a PennyLane backend, meeting real DevOps requirements.    
 
 ## 4  How to call or extend the code
 
@@ -61,7 +61,7 @@ Because the circuit returns one scalar, you can swap `QuantumHybrid` for `nn.Seq
 
 ## 5  Next steps toward production
 
-1. **Swap `default.qubit` for GPU (`lightning.gpu`)** to cut training time by ~10× on a modern RTX card.  
+1. **Swap `default.qubit` for GPU (`lightning.gpu`)** to cut training time by ~10× on a modern RTX card.   
 2. **Integrate StratifiedKFold into a Ray Tune search** for automated LR and weight-init sweeps.  
 3. **Quantise the post_net INT8** (PyTorch `quantize_dynamic`) to compress the classical head before edge deployment.
 
