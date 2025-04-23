@@ -170,7 +170,7 @@ The printed output shows the backend selection, steady loss, and successful quan
 
 ---
 
-## 8  Opportunities for you, Mr. Piccoli
+## 8  Opportunities Market
 
 * **Enterprise advantage**: This sparse-encoding idea maps well onto *event-driven telemetry* in cloud systems—quantum circuits fire only for “interesting” events, trimming compute budgets while adding genuinely quantum correlations.  
 * **IP angle**: Few competitors combine *trainable sparsity gates* with quantum layers. Packaging this as a *“Quantum-Aware Sparse Encoder”* could give your firm defensible IP.  
