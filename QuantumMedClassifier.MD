@@ -18,15 +18,15 @@
 
 ### 2.1 Data pipeline  
 * Validates sample counts and class diversity; mirrors ISO 13485 design-control steps—rare in research code.  
-* **SMOTE** balances malignant/benign classes; SMOTE is top performer in medical-imbalance reviewsciteturn0search2turn1search4.
+* **SMOTE** balances malignant/benign classes; SMOTE is top performer in medical-imbalance reviews.
 
 ### 2.2 Hybrid network  
-1. **Classical front-end** (features→16→qubits) with LeakyReLU to avoid dead activations in sparse health data citeturn1search5.  
-2. **Quantum core**: AngleEmbedding (RY) encodes scaled labs; three **BasicEntanglerLayers** supply entanglement with 3 × 8 trainable angles—shallow enough to dodge barren plateaus identified in 2024 surveys citeturn0search4turn0search7.  
-3. **Sigmoid head** outputs calibrated probability, needed for clinical decision thresholds citeturn1search8.
+1. **Classical front-end** (features→16→qubits) with LeakyReLU to avoid dead activations in sparse health data.  
+2. **Quantum core**: AngleEmbedding (RY) encodes scaled labs; three **BasicEntanglerLayers** supply entanglement with 3 × 8 trainable angles—shallow enough to dodge barren plateaus identified in 2024 surveys.  
+3. **Sigmoid head** outputs calibrated probability, needed for clinical decision thresholds.
 
 ### 2.3 Training loop  
-* **AdamW** decouples L2 and momentum; superior to Adam in biomedical imaging citeturn0search3.  
+* **AdamW** decouples L2 and momentum; superior to Adam in biomedical imaging.  
 * **Patience-based early stopping (15/20)** saves ≈60 % compute and QPU minutes.  
 * Checkpoints best model each fold; automatically writes `best_fold*.pt` to the chosen directory.
 
@@ -48,13 +48,13 @@ No public repo bundles imbalance handling, ROC logging, checkpointing, and <500-
 ## 4  Market impact
 
 ### Healthcare AI vendors  
-Proven “explainability-by-design” (confusion matrices + ROC) satisfies EU AI Act risk controls; rivals must retrofit. Investors like Novo Holdings are pouring $200 M into quantum-life-science start-ups citeturn0news129.
+Proven “explainability-by-design” (confusion matrices + ROC) satisfies EU AI Act risk controls; rivals must retrofit. Investors like Novo Holdings are pouring $200 M into quantum-life-science start-ups.
 
 ### Quantum cloud providers  
-Shallow circuits reduce job duration ⇒ lower Braket & IonQ bills; start-ups (Zapata AI, Xanadu) can embed Softquantus workflow inside their SaaS dashboards citeturn0search10.
+Shallow circuits reduce job duration ⇒ lower Braket & IonQ bills; start-ups (Zapata AI, Xanadu) can embed Softquantus workflow inside their SaaS dashboards.
 
 ### Academic consortia  
-MIDL and NeurIPS health tracks need reproducible baselines; the script’s `load_model` classmethod enables blind external validation citeturn1search2turn1search11.
+MIDL and NeurIPS health tracks need reproducible baselines; the script’s `load_model` classmethod enables blind external validation.
 
 ---
 
@@ -76,21 +76,21 @@ MIDL and NeurIPS health tracks need reproducible baselines; the script’s `load
 ---
 
 ### Most relevant sources  
-1. Medium QML breast-cancer demo citeturn0search0  
-2. Nature Q-CNN breast study citeturn0search1  
-3. SMOTE imbalance review (ScienceDirect) citeturn0search2  
-4. AdamW optimisation analysis (arXiv) citeturn0search3  
-5. PennyLane AngleEmbedding docs citeturn0search4  
-6. Barren-plateau mitigation survey citeturn0search7  
-7. Dropout efficiency in med-AI citeturn1search5  
-8. Class imbalance in QML (MDPI) citeturn0search9  
-9. Quantum-optimised SQSVM breast detection citeturn0search6  
-10. Quantum healthcare investment news (Reuters) citeturn0news129  
-11. Quantum startups (LinkedIn) citeturn0search10  
-12. StratifiedKFold docs citeturn0search11  
-13. Clinical-data QML imputation citeturn0search5  
-14. Review on deep learning in medical imaging citeturn1search8  
-15. SMOTE variants breast cancer study citeturn1search7
+1. Medium QML breast-cancer demo
+2. Nature Q-CNN breast study
+3. SMOTE imbalance review (ScienceDirect)
+4. AdamW optimisation analysis (arXiv)
+5. PennyLane AngleEmbedding docs
+6. Barren-plateau mitigation survey 
+7. Dropout efficiency in med-AI 
+8. Class imbalance in QML (MDPI)
+9. Quantum-optimised SQSVM breast detection
+10. Quantum healthcare investment news (Reuters)
+11. Quantum startups (LinkedIn)
+12. StratifiedKFold docs
+13. Clinical-data QML imputation
+14. Review on deep learning in medical imaging
+15. SMOTE variants breast cancer study
 
 
 ###CODE###
