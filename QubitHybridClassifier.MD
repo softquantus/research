@@ -9,8 +9,8 @@ It standardises four real-valued Iris-flower features, feeds them through a tiny
 ## 1 Line-by-line anatomy of the code
 
 ### 1.1 Data intake and preparation  
-* **Balanced subset** It keeps the first two Iris classes (50 / 50), giving a perfectly stratified label distribution citeturn0search4.  
-* **`StandardScaler`** standardises each feature so the rotation angles later fed into the circuit span a well-conditioned range, a best-practice in QML preprocessing citeturn0search7.
+* **Balanced subset** It keeps the first two Iris classes (50 / 50), giving a perfectly stratified label distribution.  
+* **`StandardScaler`** standardises each feature so the rotation angles later fed into the circuit span a well-conditioned range, a best-practice in QML preprocessing.
 
 ### 1.2 Variational circuit  
 ```python
@@ -19,21 +19,21 @@ def quantum_circuit(inputs, weights):
     qml.AngleEmbedding(inputs, rotation='Y')
     qml.BasicEntanglerLayers(weights)
 ```
-* **AngleEmbedding** writes four real features into Y-rotations on four qubits citeturn0search2.  
-* **BasicEntanglerLayers** applies trainable single-qubit rotations + ring entanglement; two layers is deep enough to separate non-linear classes yet shallow enough to avoid barren plateaus citeturn0search1turn0search8.  
+* **AngleEmbedding** writes four real features into Y-rotations on four qubits.  
+* **BasicEntanglerLayers** applies trainable single-qubit rotations + ring entanglement; two layers is deep enough to separate non-linear classes yet shallow enough to avoid barren plateaus.  
 * The circuit returns one Pauli-Z expectation, acting as a *learned quantum feature*.
 
 ### 1.3 Hybrid network  
 | Block | Purpose |
 |-------|---------|
 | `pre_net` = Linear → Tanh | Rotates classical features into the qubit frame. |
-| `TorchLayer` | Converts the QNode into a PyTorch module with **trainable weights** declared via `weight_shapes` and initialised at σ = 0.05 to keep gradients alive citeturn0search3turn0search9. |
+| `TorchLayer` | Converts the QNode into a PyTorch module with **trainable weights** declared via `weight_shapes` and initialised at σ = 0.05 to keep gradients alive. |
 | `post_net` = Linear(1→1) | Maps the scalar quantum output to a logit; `sigmoid` gives a class probability. |
 
 ### 1.4 Training loop  
-* **StratifiedKFold(5)** preserves class ratios in every split, giving an unbiased estimate of generalisation citeturn0search5.  
-* **Adam** with lr = 1e-2 converges fast on such small models; schedulers can still improve late-stage fine-tuning citeturn0search6.  
-* **BCELoss** is the standard criterion for binary tasks and matches the `sigmoid` output layer citeturn0search7.
+* **StratifiedKFold(5)** preserves class ratios in every split, giving an unbiased estimate of generalisation.  
+* **Adam** with lr = 1e-2 converges fast on such small models; schedulers can still improve late-stage fine-tuning.  
+* **BCELoss** is the standard criterion for binary tasks and matches the `sigmoid` output layer.
 
 ---
 
@@ -45,18 +45,18 @@ def quantum_circuit(inputs, weights):
 | Fold-wise peaks | 1.00 | Shows that even a shallow ansatz can linearly separate the classes after a few epochs when hyper-parameters align. |
 | Loss curve | 0.75 → 0.54 | Monotonic descent verifies that the chosen initialisation avoids barren plateaus and gradient noise. |
 
-Recent literature shows shallow circuits with Gaussian initialisation outperform deeper ones in trainability citeturn0search8turn0search9, underscoring the design choice.
+Recent literature shows shallow circuits with Gaussian initialisation outperform deeper ones in trainability, underscoring the design choice.
 
 ---
 
 ## 3 Softquantus: why this template is transformational
 
 ### 3.1 Full-stack integration  
-Softquantus positions itself as a **hybrid-compute orchestrator** that transparently juggles QPUs, GPUs and CPUs to minimise latency and energy per inference citeturn0search0.  
+Softquantus positions itself as a **hybrid-compute orchestrator** that transparently juggles QPUs, GPUs and CPUs to minimise latency and energy per inference.  
 Because the script already follows PyTorch + PennyLane idioms, it can be containerised and injected into Softquantus’s scheduler with near-zero refactor.
 
 ### 3.2 Scalable to real hardware  
-Fujitsu/Riken’s 256-qubit machine will ship in 2025 on a hybrid cloud fabric citeturn0search10. Plugging this device into the same `qml.device()` line lets Softquantus upgrade accuracy or feature capacity without touching the training code.
+Fujitsu/Riken’s 256-qubit machine will ship in 2025 on a hybrid cloud fabric. Plugging this device into the same `qml.device()` line lets Softquantus upgrade accuracy or feature capacity without touching the training code.
 
 ### 3.3 Resource-proportional ROI  
 *Small-qubit, shallow-depth* models yield usable accuracy today, meaning enterprises can start real projects **before** error-corrected qubits arrive. Softquantus can therefore monetise quantum acceleration earlier than rivals that bet on deep circuits.
@@ -69,7 +69,7 @@ Variational circuits execute nano-joule gate operations; combined with INT8-quan
 ## 4 Next steps Softquantus can take
 
 1. **Automated hyper-parameter tuning** – wrap this script in a Bayesian search on the platform; users upload CSVs and get optimal `n_layers`, lr, σ in hours.  
-2. **Batch-wise circuit execution** – call the QNode on tensors to exploit PennyLane 0.41’s batched simulators, slashing training time by >10× citeturn0search4.  
+2. **Batch-wise circuit execution** – call the QNode on tensors to exploit PennyLane 0.41’s batched simulators, slashing training time by >10×.  
 3. **Hardware-aware scheduling** – when QPU time is scarce, Softquantus can fall back to GPU simulation, maintaining SLAs without accuracy loss.  
 4. **Domain expansion** – swap Iris for genomic PCA (the earlier pipeline) or financial risk tables; same architecture scales with minimal tweaks.
 
@@ -77,18 +77,18 @@ Variational circuits execute nano-joule gate operations; combined with INT8-quan
 
 ## 5 Key references used
 
-1. Softquantus mission page citeturn0search0  
-2. PennyLane `BasicEntanglerLayers` docs citeturn0search1  
-3. PennyLane `AngleEmbedding` docs citeturn0search2  
-4. PennyLane `TorchLayer` docs citeturn0search3  
-5. MindSpore QNN Iris tutorial (baseline benchmark) citeturn0search4  
-6. scikit-learn `StratifiedKFold` docs citeturn0search5  
-7. PyTorch discussion on Adam scheduling citeturn0search6  
-8. PyTorch `BCELoss` docs citeturn0search7  
-9. arXiv 2024 on barren plateaus & traps citeturn0search8  
-10. arXiv 2024 on initialisation strategies for VQCs citeturn0search9  
-11. PennyLane batched execution note (2025 roadmap) citeturn0search4  
-12. Fujitsu/Riken 256-qubit launch news citeturn0search10  
+1. Softquantus mission page 
+2. PennyLane `BasicEntanglerLayers` docs
+3. PennyLane `AngleEmbedding` docs
+4. PennyLane `TorchLayer` docs
+5. MindSpore QNN Iris tutorial (baseline benchmark)
+6. scikit-learn `StratifiedKFold` docs
+7. PyTorch discussion on Adam scheduling
+8. PyTorch `BCELoss` docs
+9. arXiv 2024 on barren plateaus & traps
+10. arXiv 2024 on initialisation strategies for VQCs
+11. PennyLane batched execution note (2025 roadmap)
+12. Fujitsu/Riken 256-qubit launch news
 
 ---
 
@@ -275,15 +275,15 @@ The updated script is a **minimal-depth, high-efficiency quantum-classical pipel
 ## 1 Circuit-level innovation
 
 ### 1.1  Shallow but expressive ansatz  
-* The model uses **`BasicEntanglerLayers`**—one-parameter single-qubit rotations plus a ring of CNOTs—stacked only twice.  This template is provably expressive while keeping depth linear in qubit count, mitigating barren-plateau risks. citeturn0search0  
-* Comparative studies show that shallow circuits with careful design outperform deeper random ones once gradient variance is considered. citeturn0search3turn0search4  
+* The model uses **`BasicEntanglerLayers`**—one-parameter single-qubit rotations plus a ring of CNOTs—stacked only twice.  This template is provably expressive while keeping depth linear in qubit count, mitigating barren-plateau risks. 
+* Comparative studies show that shallow circuits with careful design outperform deeper random ones once gradient variance is considered.
 
 ### 1.2  Small-variance weight initialisation  
-* Weights are drawn from 𝒩(0, 0.05²), a regime shown to keep the circuit in the linear response region where gradients are large enough for learning. citeturn0search9  
+* Weights are drawn from 𝒩(0, 0.05²), a regime shown to keep the circuit in the linear response region where gradients are large enough for learning.
 * This contrasts with earlier examples that rebuilt the circuit each forward pass with fresh random weights, freezing learning.
 
 ### 1.3  Clean, one-line PyTorch integration  
-* `qml.qnn.TorchLayer` plus **`weight_shapes`** exposes a single trainable tensor to PyTorch optimisers and lets you checkpoint the quantum layer with `torch.save`, exactly like a conv layer. citeturn0search2  
+* `qml.qnn.TorchLayer` plus **`weight_shapes`** exposes a single trainable tensor to PyTorch optimisers and lets you checkpoint the quantum layer with `torch.save`, exactly like a conv layer.
 * The `init_method` hook further standardises quantum-layer initialisation—absent from many older QML repos.
 
 ---
@@ -292,10 +292,10 @@ The updated script is a **minimal-depth, high-efficiency quantum-classical pipel
 
 | Feature | This script | Typical older demo |
 |---------|-------------|--------------------|
-| **Cross-validation** | `StratifiedKFold` preserves 50/50 class ratio across 5 folds. citeturn0search6 | Single random split → inflated metrics |
-| **Optimiser** | Adam + constant LR (1 e-2) – empirically fastest for hybrid models. citeturn0search6 | SGD or fixed-step gradient descent |
-| **Loss function** | `BCELoss` matched to sigmoid output. citeturn0search7 | MSE or hinge, causing slower convergence |
-| **Model saving** | Whole network saved via PyTorch’s `state_dict`, enabling deployment. citeturn0search2 | No persistence path |
+| **Cross-validation** | `StratifiedKFold` preserves 50/50 class ratio across 5 folds.| Single random split → inflated metrics |
+| **Optimiser** | Adam + constant LR (1 e-2) – empirically fastest for hybrid models.| SGD or fixed-step gradient descent |
+| **Loss function** | `BCELoss` matched to sigmoid output.| MSE or hinge, causing slower convergence |
+| **Model saving** | Whole network saved via PyTorch’s `state_dict`, enabling deployment.| No persistence path |
 
 Because the training interface mirrors mainstream PyTorch, any classical MLOps stack can adopt it immediately—an essential prerequisite for Softquantus-style orchestration.
 
@@ -305,7 +305,7 @@ Because the training interface mirrors mainstream PyTorch, any classical MLOps s
 
 | Metric | Script (mean of folds) | Best prior 4-qubit VQC on Iris* |
 |--------|-----------------------|---------------------------------|
-| Accuracy | **0.90** | 0.85 – 0.92, depending on ansatz and optimiser citeturn0search5turn0search10 |
+| Accuracy | **0.90** | 0.85 – 0.92, depending on ansatz and optimiser|
 | Epochs to ≥ 95 % (best folds) | 20 | 30 – 40 |
 
 \*Based on 2024–25 hybrid-Iris benchmark papers.  
@@ -317,10 +317,9 @@ Thus the script matches or beats heavier circuits while using half the depth and
 ## 4 Why this matters for Softquantus
 
 ### 4.1  Plug-and-play with hybrid schedulers  
-Softquantus markets a cloud service that dispatches quantum tasks to simulators, GPUs or real QPUs as capacity allows. The script’s PennyLane device abstraction (`qml.device(...)`) aligns perfectly with such orchestration: swapping `"default.qubit"` for an AWS Braket ARN lets the same code run on superconducting or trapped-ion hardware, with the scheduler handling queuing and priority. citeturn0search8
-
+Softquantus markets a cloud service that dispatches quantum tasks to simulators, GPUs or real QPUs as capacity allows. The script’s PennyLane device abstraction (`qml.device(...)`) aligns perfectly with such orchestration: swapping `"default.qubit"` for an AWS Braket ARN lets the same code run on superconducting or trapped-ion hardware, with the scheduler handling queuing and priority.
 ### 4.2  Resource-proportional scaling  
-Because the circuit is shallow and the post-net is a single linear layer, INT8 dynamic quantisation can compress the classical part with one line of code, trimming CPU latency—ideal for edge deployment scenarios Softquantus envisions. citeturn0search7
+Because the circuit is shallow and the post-net is a single linear layer, INT8 dynamic quantisation can compress the classical part with one line of code, trimming CPU latency—ideal for edge deployment scenarios Softquantus envisions.
 
 ### 4.3  Business-ready reproducibility  
 The combination of weight-checkpointing, deterministic data splits, and explicit scaler fitting means results are **totally reproducible**, satisfying enterprise audit trails—another gap in many academic QML repos.
@@ -331,7 +330,7 @@ The combination of weight-checkpointing, deterministic data splits, and explicit
 
 1. **Qiskit VQC demos** – usually rely on deeper `EfficientSU2` ansätze with 12+ parameters per qubit, running into barren-plateau slowdowns; this script hits the same accuracy with eight trainable weights.  
 2. **TensorFlow QML notebooks** – often skip cross-validation and persistence; the new script adopts full ML hygiene, slashing the translation gap between research and DevOps.  
-3. **Zapata Orquestra workflows** – supply orchestration but not turnkey model code; Softquantus can merge its scheduler with *this* thin-circuit template to ship end-to-end solutions faster. citeturn0search9  
+3. **Zapata Orquestra workflows** – supply orchestration but not turnkey model code; Softquantus can merge its scheduler with *this* thin-circuit template to ship end-to-end solutions faster. 
 
 ---
 
