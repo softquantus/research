@@ -1,21 +1,20 @@
 
 The script is a **live-data, finance-oriented quantum-classical pipeline** that fetches Apple and Microsoft prices from Yahoo Finance, engineers six core technical indicators, encodes them into a 4-qubit, 3-layer variational circuit, and trains the hybrid network with modern deep-learning hygiene (AdamW, dropout, weight-decay, class balancing, early stopping, LR scheduling).  The goal is to predict whether tomorrow’s close will be up or down—an archetypal directional-signal task in algorithmic trading.  What makes it a potential game-changer is the way it compresses an end-to-end quant workflow (data feed → signal engineering → quantum model → compliance-grade metrics) into ~200 lines, using only four qubits and a few dozen parameters—small enough to test on a laptop yet architected to swap a real QPU back-end when the business case justifies the cost.  
 
----
 
 ## 1  Data ingestion & feature engineering  
 
 ### Live market feed  
-`yfinance.download()` pulls split-adjusted OHLC data directly from Yahoo Finance’s public API, the de facto standard in notebook-based quant research citeturn0search0.  
+`yfinance.download()` pulls split-adjusted OHLC data directly from Yahoo Finance’s public API, the de facto standard in notebook-based quant research .  
 
 ### Six robust indicators  
 * **Return** – one-day percentage change, the basic momentum signal.  
-* **RSI(14)** – momentum oscillator computed over a 14-day window citeturn0search1.  
-* **MACD(12–26 EMA)** – trend-following indicator capturing EMA convergence/divergence citeturn0search2.  
-* **MA10, MA50** – short- and mid-term simple moving averages widely used in crossover systems citeturn0search12.  
+* **RSI(14)** – momentum oscillator computed over a 14-day window.  
+* **MACD(12–26 EMA)** – trend-following indicator capturing EMA convergence/divergence.  
+* **MA10, MA50** – short- and mid-term simple moving averages widely used in crossover systems.  
 * **10-day volatility** – rolling standard deviation of returns, a proxy for risk.  
 
-The feature set mirrors those discussed in 2024 QML-finance surveys citeturn0search3.
+The feature set mirrors those discussed in 2024 QML-finance surveys.
 
 ---
 
@@ -23,20 +22,20 @@ The feature set mirrors those discussed in 2024 QML-finance surveys citetu
 
 | Stage | Component | Rationale |
 |-------|-----------|-----------|
-| **Encoder** | Two linear layers (6→8→4) with ReLU + Dropout 0.3; Kaiming init | Handles non-stationary scale; dropout combats over-fitting in thin financial data citeturn1search8. |
-| **Quantum core** | `AngleEmbedding` (RY) + 3-layer **Strongly Entangling Layers** on 4 qubits | SELs provide expressive yet trainable ansätze validated in PennyLane docs citeturn0search4 while AngleEmbedding is the canonical feature loader citeturn0search5. |
+| **Encoder** | Two linear layers (6→8→4) with ReLU + Dropout 0.3; Kaiming init | Handles non-stationary scale; dropout combats over-fitting in thin financial data. |
+| **Quantum core** | `AngleEmbedding` (RY) + 3-layer **Strongly Entangling Layers** on 4 qubits | SELs provide expressive yet trainable ansätze validated in PennyLane docs while AngleEmbedding is the canonical feature loader. |
 | **Head** | 4→8→1 with Sigmoid | Outputs a probability of “price up.” |
 
-Small-σ (0.1) weight init plus shallow entanglement depth mitigate barren-plateau vanishing gradients citeturn0search9.
+Small-σ (0.1) weight init plus shallow entanglement depth mitigate barren-plateau vanishing gradients.
 
 ---
 
 ## 3  Training & evaluation pipeline  
 
-* **StratifiedKFold(5)** preserves up/down ratios during CV citeturn0search11.  
-* **AdamW** optimiser delivers decoupled weight-decay, preferred for stability in modern DL citeturn0search6.  
-* **Class-balancing** via `compute_class_weight` tackles label skew common in equity moves citeturn0search10.  
-* **Early stopping (patience 10)** curbs over-training and QPU cost citeturn0search7.  
+* **StratifiedKFold(5)** preserves up/down ratios during CV.  
+* **AdamW** optimiser delivers decoupled weight-decay, preferred for stability in modern DL.  
+* **Class-balancing** via `compute_class_weight` tackles label skew common in equity moves.  
+* **Early stopping (patience 10)** curbs over-training and QPU cost.  
 * **Precision, Recall, F1, Confusion matrix** logged per fold—critical for MiFID/SEC audit trails.  
 
 ---
@@ -45,7 +44,7 @@ Small-σ (0.1) weight init plus shallow entanglement depth mitigate barren-plate
 
 1. **End-to-end reproducibility** – from raw ticker pull to `quantum_trader_final.pth`, every transform is in the script.  
 2. **Compliance-grade observability** – full metric suite + confusion matrices, beyond the accuracy-only norm in QML demos.  
-3. **Resource frugality** – four qubits × 3 layers = ≈120 gates, vs. 500+ parameters in EfficientSU2 examples from IBM citeturn0search3.  
+3. **Resource frugality** – four qubits × 3 layers = ≈120 gates, vs. 500+ parameters in EfficientSU2 examples from IBM.  
 4. **Hardware-agnostic** – swap `"default.qubit"` for `"lightning.gpu"` or a Braket ARN and the rest just works.  
 5. **Modern DL hygiene** – Dropout, AdamW, ReduceLROnPlateau, class weights—rarely all included in quantum finance notebooks.  
 
@@ -56,10 +55,10 @@ Small-σ (0.1) weight init plus shallow entanglement depth mitigate barren-plate
 | Domain | How the model fits | Supporting literature |
 |--------|-------------------|-----------------------|
 | **High-frequency pre-filter** | 15 kB checkpoint can run on FPGA edge devices to flag directional bias before heavier models. | QML micro-models in HFT pipelines  |
-| **Retail robo-advice** | Probabilistic up/down output feeds portfolio tilting, with dropout adding uncertainty estimates. | QML fintech review citeturn0search3 |
+| **Retail robo-advice** | Probabilistic up/down output feeds portfolio tilting, with dropout adding uncertainty estimates. | QML fintech review |
 | **Credit-risk or fraud detection** | Shallow circuit generalises under imbalance; class-weight flag already in code. | Quantum credit-risk studies  |
-| **Academic barren-plateau experiments** | Ready-made shallow ansatz with financial noise—perfect benchmark data. | Entanglement-barren plateau paper citeturn0search9 |
-| **Time-series feature-engineering research** | Combines classic TA indicators with quantum encoding—opens avenue for hybrid feature kernels. | Financial time-series dropout reg. citeturn1search0 |
+| **Academic barren-plateau experiments** | Ready-made shallow ansatz with financial noise—perfect benchmark data. | Entanglement-barren plateau paper|
+| **Time-series feature-engineering research** | Combines classic TA indicators with quantum encoding—opens avenue for hybrid feature kernels. | Financial time-series dropout reg.|
 
 ---
 
@@ -75,7 +74,7 @@ Small-σ (0.1) weight init plus shallow entanglement depth mitigate barren-plate
 
 ### Key sources  
 
-yfinance docs citeturn0search0 · RSI explainer citeturn0search1 · MACD explainer citeturn0search2 · QML-finance 2024 survey citeturn0search3 · PennyLane SEL citeturn0search4 · AngleEmbedding citeturn0search5 · AdamW docs citeturn0search6 · Early-stopping study citeturn0search7 · Barren-plateau mitigation citeturn0search9 · Class weight API citeturn0search10 · StratifiedKFold citeturn0search11 · Moving average primer citeturn0search12 · Quantum stock-direction SVM citeturn0search13 · Dropout in finance time series citeturn1search0 · HFT edge deployment note .
+yfinance docs· RSI explainer· MACD explainer· QML-finance 2024 survey· PennyLane SEL· AngleEmbedding· AdamW docs· Early-stopping study· Barren-plateau mitigation· Class weight API· StratifiedKFold· Moving average primer· Quantum stock-direction SVM· Dropout in finance time series· HFT edge deployment note .
 
 
 ###CODE###
