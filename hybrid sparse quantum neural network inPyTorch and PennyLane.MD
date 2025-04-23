@@ -244,7 +244,7 @@ The variational block follows the canonical three-step recipe—state preparatio
 
 ---
 
-## 7 Actionable insights for you, Mr. Piccoli
+## 7 Actionable insights.
 
 * **Product angle** – Position this as a “Quantum Feature Boost” micro-service that plugs into existing tabular ML pipelines, lifting accuracy on imbalanced or highly correlated data with minimal qubit overhead.  
 * **Research/IP** – File provisional claims on adaptive *classical-to-quantum feature funnels*—a sparsity-aware linear layer that learns the embedding distribution best suited to a given ansatz.  
