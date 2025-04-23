@@ -226,3 +226,54 @@ print(results[0]['report'])
 # salvar modelo final
 torch.save(model.state_dict(), 'quantum_hybrid_model.pth')
 ```
+
+###RESULTS###
+Distribuição de classes: [50 50]
+
+Fold 1/5
+Epoch 10/50 | Loss: 0.6825
+Epoch 20/50 | Loss: 0.5757
+Epoch 30/50 | Loss: 0.3462
+Epoch 40/50 | Loss: 0.2024
+Epoch 50/50 | Loss: 0.1191
+
+Fold 2/5
+Epoch 10/50 | Loss: 0.5905
+Epoch 20/50 | Loss: 0.3860
+Epoch 30/50 | Loss: 0.3350
+Epoch 40/50 | Loss: 0.2506
+Epoch 50/50 | Loss: 0.1600
+
+Fold 3/5
+Epoch 10/50 | Loss: 0.6596
+Epoch 20/50 | Loss: 0.5691
+Epoch 30/50 | Loss: 0.4661
+Epoch 40/50 | Loss: 0.2897
+Epoch 50/50 | Loss: 0.2227
+
+Fold 4/5
+Epoch 10/50 | Loss: 0.6730
+Epoch 20/50 | Loss: 0.6150
+Epoch 30/50 | Loss: 0.4510
+Epoch 40/50 | Loss: 0.2689
+Epoch 50/50 | Loss: 0.1054
+
+Fold 5/5
+Epoch 10/50 | Loss: 0.6486
+Epoch 20/50 | Loss: 0.4781
+Epoch 30/50 | Loss: 0.3184
+Epoch 40/50 | Loss: 0.1113
+Epoch 50/50 | Loss: 0.1285
+
+Average Accuracy: 0.9900
+
+
+Relatório de Classificação (Fold 1):
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        10
+  versicolor       1.00      1.00      1.00        10
+
+    accuracy                           1.00        20
+   macro avg       1.00      1.00      1.00        20
+weighted avg       1.00      1.00      1.00        20
