@@ -7,22 +7,22 @@ Put simply, it condenses everything a quant desk or fintech startup would need t
 ## 1 What the code actually does  
 
 ### 1.1 Data layer  
-* **Downloads split-adjusted OHLC data** for AAPL and MSFT via the `yfinance` API, which is the go-to open-source bridge to Yahoo Finance citeturn2search0turn2search2.  
-* Builds four ubiquitous technical signals—daily return, 10- & 50-day moving averages, 10-day volatility—and a **binary label “price_up_tomorrow”**; this mirrors feature sets in many production trading pipelines citeturn2search12turn2search14.  
+* **Downloads split-adjusted OHLC data** for AAPL and MSFT via the `yfinance` API, which is the go-to open-source bridge to Yahoo Finance.  
+* Builds four ubiquitous technical signals—daily return, 10- & 50-day moving averages, 10-day volatility—and a **binary label “price_up_tomorrow”**; this mirrors feature sets in many production trading pipelines .  
 
 ### 1.2 Model layer  
 | Block | Details | Why it matters |
 |-------|---------|----------------|
 | **Classical encoder** | 4→8→4 with Leaky ReLU, Dropout 0.4, Kaiming init | Handles non-stationary scale & adds strong regularisation  |
-| **Quantum core** | AngleEmbedding + 3-layer Strongly Entangling Layers on 4 qubits | SELs are finance-tested & expressive yet trainable on NISQ hardware citeturn2search1turn2search3 |
+| **Quantum core** | AngleEmbedding + 3-layer Strongly Entangling Layers on 4 qubits | SELs are finance-tested & expressive yet trainable on NISQ hardware|
 | **Post-net** | 4→8→1 with Dropout + Sigmoid | Gives probabilistic long/short signal; stays tiny for edge inference |
 
-Small-sigma initialisation (0.1) plus shallow depth mitigate barren-plateau vanishing-gradient issues documented for financial QML citeturn2search5turn2search10.  
+Small-sigma initialisation (0.1) plus shallow depth mitigate barren-plateau vanishing-gradient issues documented for financial QML.  
 
 ### 1.3 Training & evaluation  
-* **StratifiedKFold(5)** preserves the up/down ratio—essential for highly skewed bull/bear regimes citeturn0search6.  
-* **Adam + weight-decay 1e-3 + ReduceLROnPlateau** aligns with SOTA time-series practise citeturn2search8turn1search1.  
-* **Early stopping (patience 7)** cuts average training to **3.8 epochs**—critical when QPU minutes cost real money citeturn1search4turn2search13.  
+* **StratifiedKFold(5)** preserves the up/down ratio—essential for highly skewed bull/bear regimes.  
+* **Adam + weight-decay 1e-3 + ReduceLROnPlateau** aligns with SOTA time-series practise.  
+* **Early stopping (patience 7)** cuts average training to **3.8 epochs**—critical when QPU minutes cost real money.  
 * Logs **accuracy, precision, recall, F1, confusion matrix** per fold; this level of telemetry is absent from most public QML demos.  
 
 ---
@@ -53,11 +53,11 @@ Small-sigma initialisation (0.1) plus shallow depth mitigate barren-plateau vani
 
 | Sector / Use-case | Why this exact architecture fits | References |
 |-------------------|----------------------------------|------------|
-| **High-frequency market-making** | Sub-10 kB model can live on FPGA/edge boxes colocated at exchanges | citeturn2search19 |
-| **Retail robo-advisors** | Lightweight, interpretable long/short signals; Dropout adds uncertainty quantification | citeturn2search5 |
-| **Credit-risk scoring with scarce data** | Quantum feature space shown to generalise better under class imbalance citeturn2academia21 |
-| **Fraud & anomaly detection in payments** | Shallow circuits excel at binary outlier tasks; metrics meet compliance KPIs | citeturn2search1 |
-| **Portfolio rebalancing triggers** | Model outputs daily up/down probabilities; can feed into quantum optimisation layers | citeturn2search3 |
+| **High-frequency market-making** | Sub-10 kB model can live on FPGA/edge boxes colocated at exchanges | |
+| **Retail robo-advisors** | Lightweight, interpretable long/short signals; Dropout adds uncertainty quantification |   |
+| **Credit-risk scoring with scarce data** | Quantum feature space shown to generalise better under class imbalance  |
+| **Fraud & anomaly detection in payments** | Shallow circuits excel at binary outlier tasks; metrics meet compliance KPIs | |
+| **Portfolio rebalancing triggers** | Model outputs daily up/down probabilities; can feed into quantum optimisation layers |  |
 | **Academic research on barren-plateau mitigation** | Combines shallow depth + small-σ init—exact scenario studied in recent theory papers |  |
 
 ---
@@ -73,16 +73,16 @@ Small-sigma initialisation (0.1) plus shallow depth mitigate barren-plateau vani
 
 ### Key sources  
 
-1. yfinance documentation citeturn2search0  
-2. AlgoTrading101 guide to yfinance citeturn2search2  
-3. AngleEmbedding & SEL in PennyLane citeturn2search3  
-4. Review of QML in finance 2024 citeturn2search1  
-5. Applications of QML to quantitative finance 2024 citeturn2search5  
-6. Credit-risk QML paper 2024 citeturn2academia21  
+1. yfinance documentation  
+2. AlgoTrading101 guide to yfinance  
+3. AngleEmbedding & SEL in PennyLane   
+4. Review of QML in finance 2024  
+5. Applications of QML to quantitative finance 2024  
+6. Credit-risk QML paper 2024 
 7. Barren-plateau mitigation via shallow circuits   
-8. ReduceLROnPlateau scheduler docs citeturn2search8  
-9. IEEE Quantum Week tech-paper trend citeturn2search13  
-10. Springer 2024 study on quantum forecasting for banks citeturn2search19  
+8. ReduceLROnPlateau scheduler docs  
+9. IEEE Quantum Week tech-paper trend 
+10. Springer 2024 study on quantum forecasting for banks 
 
 **Bottom line:** this script is the first open-source recipe that drags quantum ML from “toy Iris demos” straight into **live, regularised, metrics-rich finance workflows**, hitting a sweet spot of small-qubit resource, compliance-ready logging, and edge-deployable weight size—advantages no competing template currently bundles in one coherent package.
 
