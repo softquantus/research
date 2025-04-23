@@ -5,7 +5,7 @@ The script is a **live-data, finance-oriented quantum-classical pipeline** that 
 ## 1  Data ingestion & feature engineering  
 
 ### Live market feed  
-`yfinance.download()` pulls split-adjusted OHLC data directly from Yahoo Finance’s public API, the de facto standard in notebook-based quant research .  
+`yfinance.download()` pulls split-adjusted OHLC data directly from Yahoo Finance’s public API, the de facto standard in notebook-based quant research .  
 
 ### Six robust indicators  
 * **Return** – one-day percentage change, the basic momentum signal.  
