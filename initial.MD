@@ -16,26 +16,8 @@ Intended to document proof of authorship and date of creation.
 ```
 
 **Files to Deposit**  
-- **File size limit:** 0 MB – 2 GB  
-- **Max number of files:** 0 – 100  
+Numéro national : DSO2025008356
 
-*(Attach as a single ZIP or multiple archives, up to 2 GB total.)*
-
-**Storage Option**  
-- [ ] INPI retains only **file fingerprints** (no file upload; full privacy)  
-- [x] INPI retains the **full files** (secure storage)
-
-**Pricing**  
-- Base fee: **€15** (includes up to 50 MB retention)  
-- Additional retention: **€10 per extra 50 MB**  
-- Initial retention period: **5 years**  
-- Renewal (prolongation) for additional 5-year periods, up to 20 years, at the same rates.
-
-**Applicant**  
-```
-Name: Roytman Piccoli  
-Address: [Your postal address in France]  
-Email: [Your email]  
 ```
 
 ---
@@ -43,6 +25,7 @@ Email: [Your email]
 ## 🇫🇷 Version Française
 
 **Intitulé du dépôt**  
+
 ```
 Code Réseau Hybride Quantique-Classique (Modèles Iris et Finance Améliorés)
 ```
@@ -56,12 +39,8 @@ Code source d’un réseau neuronal hybride quantique-classique, implémenté en
 – Exemples d’application sur Iris et prévision de rendements financiers  
 Objet : preuve d’antériorité et date de création.
 ```
+Numéro national : DSO2025008356
 
-**Déposant**  
-```
-Nom : Roytman Piccoli  
-Adresse : 33B Rue Du mont Valerien, 92210, Saint Cloud, Frances
-Courriel : workpiccoli@gmail.com
 
 ```
 
@@ -210,17 +189,17 @@ G-10<br/>Current library | Full plug-in configuration objects, weighted loss, vi
 ## 2 · Architectural innovations
 
 ### 2.1  Parameter-efficient classical blocks  
-* **LoRA adapters** inject ΔW = A·B (rank≤4) next to frozen base weights, letting you retask ImageNet-sized backbones with kilobytes of gradients. The original paper reports up to 99 % task performance with <0.1 % extra FLOPs citeturn0search0.
+* **LoRA adapters** inject ΔW = A·B (rank≤4) next to frozen base weights, letting you retask ImageNet-sized backbones with kilobytes of gradients. The original paper reports up to 99 % task performance with <0.1 % extra FLOPs.
 
-* **Dynamic INT8 quantisation** keeps weight matrices in `qint8`, de-quantising only for matmul. 2–4× memory savings; <2 % accuracy drop when coupled with calibration citeturn0search1.
+* **Dynamic INT8 quantisation** keeps weight matrices in `qint8`, de-quantising only for matmul. 2–4× memory savings; <2 % accuracy drop when coupled with calibration.
 
 ### 2.2  Quantum layers  
-* **TorchLayer** wraps any PennyLane QNode so its variational weights appear as ordinary `nn.Parameter` objects citeturn0search3.  
-* **AngleEmbedding** converts normalised floats to qubit rotations; **StronglyEntanglingLayers** supply an expressive ansatz with O(L·n qubits · 3) trainables citeturn0search4turn0search5.  
-* **Lightning GPU / Kokkos** simulators exploit CUDA or Kokkos back-ends; adjoint differentiation gives analytical gradients in O(2ⁿ) memory but halves runtime for circuits <30 qubits citeturn1search8.
+* **TorchLayer** wraps any PennyLane QNode so its variational weights appear as ordinary `nn.Parameter` objects.  
+* **AngleEmbedding** converts normalised floats to qubit rotations; **StronglyEntanglingLayers** supply an expressive ansatz with O(L·n qubits · 3) trainables.  
+* **Lightning GPU / Kokkos** simulators exploit CUDA or Kokkos back-ends; adjoint differentiation gives analytical gradients in O(2ⁿ) memory but halves runtime for circuits <30 qubits.
 
 ### 2.3  Training accelerators  
-* **Autocast + GradScaler** enable float16 compute where numerically safe, boosting tensor core utilisation citeturn0search2.  
+* **Autocast + GradScaler** enable float16 compute where numerically safe, boosting tensor core utilisation.  
 * Cross-validated early stopping prevents wasteful epochs, guided by ROC-AUC rather than raw loss in medical scenarios.
 
 ---
@@ -228,22 +207,22 @@ G-10<br/>Current library | Full plug-in configuration objects, weighted loss, vi
 ## 3 · End-to-end data pipelines
 
 ### 3.1  Classical ML hygiene  
-* **StratifiedKFold** preserves label ratios per fold—vital for imbalanced tasks citeturn0search9.  
-* **SMOTE** synthesises minority samples to lift recall without corrupting decision boundaries citeturn0search8.
+* **StratifiedKFold** preserves label ratios per fold—vital for imbalanced tasks.  
+* **SMOTE** synthesises minority samples to lift recall without corrupting decision boundaries.
 
 ### 3.2  Domain-specific tweaks  
 
 | Domain | Extra features | Rationale |
 |--------|----------------|-----------|
-| **Finance** | Returns, MA 10/50, volatility, RSI, MACD citeturn0search11 | Encode momentum & risk; QNN learns non-linear arbitrage. |
-| **Genomics** | SNPs → PCA-4 d citeturn0search12 | Compresses 100-dim into 2π range for embedding. |
-| **Medical** | Breast-cancer dataset (569×30) citeturn0search10, AUC focus | Regulatory metrics demand sensitivity > 0.9. |
+| **Finance** | Returns, MA 10/50, volatility, RSI, MACD| Encode momentum & risk; QNN learns non-linear arbitrage. |
+| **Genomics** | SNPs → PCA-4 d | Compresses 100-dim into 2π range for embedding. |
+| **Medical** | Breast-cancer dataset (569×30), AUC focus | Regulatory metrics demand sensitivity > 0.9. |
 
 ---
 
 ## 4 · Hybrid resource scheduling
 
-The custom **HybridScheduler** assigns each quantum batch (`task_type='quantum'`) to an idle QPU or, failing that, to a local simulator. Comparable schedulers in HPC clusters reduce wall-clock time by ≈35 % when quantum resources are scarce citeturn0search13.  
+The custom **HybridScheduler** assigns each quantum batch (`task_type='quantum'`) to an idle QPU or, failing that, to a local simulator. Comparable schedulers in HPC clusters reduce wall-clock time by ≈35 % when quantum resources are scarce.  
 Your design additionally retries failed tasks up to three times and downgrades to zero-vector padding—simple but effective for robustness.
 
 ---
@@ -252,7 +231,7 @@ Your design additionally retries failed tasks up to three times and downgrades t
 
 1. **Classical-gradient bottleneck** – Adjoint scales poorly beyond 30 qubits. Look at *parameter-shift sampling* on cloud QPUs or *Tensor-Network* simulators.  
 2. **Data loaders** – You’re reshaping tensors on every epoch; switch to `torch.utils.data.Dataset` with on-the-fly transformations to slash host-device copies.  
-3. **Distributed QPU calls** – Adopt *Ray* or *Dask* to parallelise circuit evaluation further; papers show ~6× speed-up on multi-GPU clusters citeturn0search6.  
+3. **Distributed QPU calls** – Adopt *Ray* or *Dask* to parallelise circuit evaluation further; papers show ~6× speed-up on multi-GPU clusters.  
 4. **Model governance** – Log every quantum weight & classical hyper-param with *MLflow* to comply with future ISO/IEC 42001 AI management requirements.
 
 ---
