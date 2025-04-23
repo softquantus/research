@@ -42,7 +42,7 @@ Precision, recall and F1 are computed each fold; the “problematic” fold’s 
 
 | Solution | Qubits / params | Depth | Mean CV Acc. | Training safeguards | Deployment weight |
 |----------|-----------------|-------|--------------|---------------------|-------------------|
-| **This script** | 4 / < 100 | 2 SEL layers | 0.90 ± 0.20 | Dropout, weight-decay, early-stop, CV | < 10 KB `.pth` |
+| **Softquantus Script** | 4 / < 100 | 2 SEL layers | 0.90 ± 0.20 | Dropout, weight-decay, early-stop, CV | < 10 KB `.pth` |
 | Qiskit VQC default (EfficientSU2) | 4 – 8 / > 300 | ≥ 8 layers | 0.85 – 0.92 | No dropout, no ES | > 30 KB; slower simulators|
 | Amazon Braket Hybrid Job sample | 8 qubits / 200+ | 4-6 layers | 0.82 (reported) | Basic val-split, no ES | Job-specific container|
 | Zapata Orquestra workflow | 6 qubits / 250 | variable | 0.83 (demo) | External tuning service | YAML + cloud licence |
