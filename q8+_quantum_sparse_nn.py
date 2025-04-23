@@ -1,4 +1,4 @@
-Mr. Piccoli, here’s a forensic, first-principles breakdown of what the **`q8+_quantum_sparse_nn.py`** script is doing and what it actually achieves.
+**`q8+_quantum_sparse_nn.py`** script is doing and what it actually achieves.
 
 At a glance, the program builds a *hybrid* (classical + quantum) neural network in PyTorch and PennyLane, trains it on a toy data set, and then compresses the classical layers with dynamic INT8 quantization.  Its key innovations are (i) **data-dependent sparsity**—only “salient” features trigger quantum gates—and (ii) **hardware awareness**—it tries to use GPU-accelerated state-vector simulators and INT8 inference to keep latency low.  Because the training data are tiny, the loss plateaus quickly, but the code demonstrates a template you could scale on real hardware or larger data.
 
